@@ -4,12 +4,14 @@ import StartingPage from "./components/StartingPage";
 import ProjectDetails from "./components/ProjectDetails";
 import { useState } from "react";
 
-let currentProject;
+// let currentProject;
 function App() {
   const [isStartingPage, setIsStartingPage] = useState(true)
   const [isProjectDetails, setIsProjectDetails] = useState(false)
   const [isPgCreation, setIsPgCreation] = useState(false)
   const [projectData, setProjectData] = useState([])
+  const [currentProject, setCurrentProject] = useState([])
+
 
   function handleCreate() {
     setIsStartingPage(false)
@@ -37,12 +39,57 @@ function App() {
   function viewDetails(key) {
     for (const item of projectData) {
       if (projectData.indexOf(item) === key) {
-        currentProject = item
+        setCurrentProject(item)
       }
       handleDetails()
     }
     return;
   }
+  function addTask(taskValue) {
+    setProjectData(prev => {
+      // Map through the previous state to create a new array
+      return prev.map(item => {
+        // Check if the current item is the project we want to update
+        if (item.title === currentProject.title) {
+          // Create a new item with the updated tasks
+          return {
+            ...item,
+            tasks: item.tasks ? [...item.tasks, taskValue] : [taskValue]
+          };
+        }
+        // Return the item as is if it's not the project we're updating
+        return item;
+      });
+    });
+    // currentProject.tasks.push(taskValue)
+    !currentProject.tasks ? currentProject.tasks = [taskValue] : currentProject.tasks.push(taskValue)
+    return;
+  }
+
+  function removeTask(task) {
+    setProjectData((prev) => {
+      return prev.map(item => {
+        if (item.title === currentProject.title) {
+          return {
+            ...item,
+            tasks: [item.tasks.filter((kaam) => kaam !== task)]
+          }
+        }
+        return item
+      })
+    })
+    currentProject.tasks = currentProject.tasks.filter((kaam) => kaam !== task)
+  }
+  function handleDelete(project) {
+    setProjectData((prev) => {
+      return prev.filter(item => item.title !== project.title)
+    })
+    // console.log(project)
+    handleBackHome()
+  }
+
+  // console.log(projectData)
+  // console.log(currentProject)
 
   // console.log(projectData)
   // console.log(currentProject)
@@ -50,7 +97,7 @@ function App() {
     <div className="flex text-lg" >
       <SideBar viewDetails={viewDetails} newProject={projectData} onCreate={handleCreate} />
       {isStartingPage ? <StartingPage onCreate={handleCreate} /> : null}
-      {isProjectDetails ? <ProjectDetails project={currentProject} /> : null}
+      {isProjectDetails ? <ProjectDetails handleDelete={handleDelete} removeTask={removeTask} addTask={addTask} project={currentProject} /> : null}
       {isPgCreation ? <PgCreation onCreate={handleCreate} onCancel={handleBackHome} catchData={outputData} /> : null}
 
     </div>
