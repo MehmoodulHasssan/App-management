@@ -20,6 +20,7 @@ export default function ProjectDetails({ project, addTask, removeTask, handleDel
     //     // const text = taskRefs.current[0].innerText.replace('Clear', '')
     //     setTaskArr(prev => prev.filter((_, index) => index !== taskIndex))
     // }
+    console.log(project.tasks)
     // console.log(taskRefs.current[0].innerText.replace('Clear', ''))
     return (
         <div className="w-full p-7 mt-8 text-lg font-ptsans">
@@ -35,9 +36,13 @@ export default function ProjectDetails({ project, addTask, removeTask, handleDel
                 <h2 className="font-bold text-4xl mt-4">Tasks</h2>
                 <div className="flex mt-4">
                     <input onChange={(e) => (setTaskValue(e.target.value))} className="p-1 bg-gray-200" type="text" value={taskValue} />
-                    <button onClick={() => addTask(taskValue)} className="p-1 ml-2 text-black rounded-md hover:bg-black hover:text-white">Add Task</button>
+                    <button onClick={() => {
+                        taskValue === '' ? alert('Please enter a value') :
+                            addTask(taskValue)
+                        setTaskValue('')
+                    }} className="p-1 ml-2 text-black rounded-md hover:bg-black hover:text-white">Add Task</button>
                 </div>
-                <ul className={project.tasks ? "mt-8 p-5 bg-gray-200" : null}>
+                <ul className={!project.tasks || project.tasks.length === 0 ? null : "mt-8 p-5 bg-gray-200"}>
                     {project.tasks ? project.tasks.map((task, index) => {
                         return <li key={index} className="flex justify-between mt-2">
                             {task}
